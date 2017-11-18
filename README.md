@@ -1,7 +1,7 @@
 # FundulidaePhylogenomics_RNAseq
 Scripts and files associated with "Phylogenomic analysis of Fundulidae (Teleostei: Cyprinodontiformes) using RNA-sequencing Data"
 
-The scripts and steps listed below correspond to the data analysis pipeline used for the phylogenomic analysis of 16 Fundulidae species as described in article listed above.  Please note that the scripts are not configured to run specific computers, as they contain many hard-coded paths and appear just as they were written for analysis.  These scripts are intended to provide information about how the analyses were performed but need further updating to be easily re-runnable on other computing systems.
+The scripts and steps listed below correspond to the data analysis pipeline used for the phylogenomic analysis of 16 Fundulidae species as described in article listed above.  Please note that the scripts are configured to run specific computer systems, as they contain many hard-coded paths and appear just as they were written for analysis.  These scripts are intended to provide information about how the analyses were performed but need further updating to be easily re-runnable on other computing systems.
 
 ## 1. Trimming and Filtering
 **fundulus_trimmer.pl**
@@ -22,7 +22,7 @@ The number of reads for each sample's R1 file was counted and output into a plai
 
 ## 4. *de novo* Assembly of Transcripts using Trinity
 
-*de novo* assembly of transcripts was performed on the individual samples selected in step 3. Each assembly job was submitted to the [SIUC BigDog Cluster](http://oit.siu.edu/rcc/bigdog/ "SIUC BigDog High Performance Computing Cluster) via command line with the following parameters:
+*de novo* assembly of transcripts was performed on the individual samples selected in step 3. Each assembly job was submitted to the [SIUC BigDog Cluster](http://oit.siu.edu/rcc/bigdog/ (SIUC BigDog High Performance Computing Cluster) via command line with the following parameters:
 ```bash
 Trinity.pl \
 --seqType fq \
