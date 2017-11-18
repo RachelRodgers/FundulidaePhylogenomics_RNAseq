@@ -22,7 +22,7 @@ The number of reads for each sample's R1 file was counted and output into a plai
 
 ## 4. *de novo* Assembly of Transcripts using Trinity
 
-*de novo* assembly of transcripts was performed on the individual samples selected in step 3. Each assembly job was submitted to the [SIUC BigDog Cluster](http://oit.siu.edu/rcc/bigdog/ (SIUC BigDog High Performance Computing Cluster) via command line with the following parameters:
+*de novo* assembly of transcripts was performed on the individual samples selected in step 3. Each assembly job was submitted to the [SIUC BigDog Cluster](http://oit.siu.edu/rcc/bigdog/ "SIUE BigDog High Performance Computing Cluster") via command line with the following parameters:
 ```bash
 Trinity.pl \
 --seqType fq \
