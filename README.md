@@ -1,28 +1,23 @@
 # FundulidaePhylogenomics_RNAseq
 Scripts and files associated with "Phylogenomic analysis of Fundulidae (Teleostei: Cyprinodontiformes) using RNA-sequencing Data"
 
-The scripts and steps listed below correspond to the data analysis pipeline used for the phylogenomic analysis of 16 Fundulidae species as described in article listed above.  Please note that the scripts are configured to run specific computer systems, as they contain many hard-coded paths and appear just as they were written for analysis.  These scripts are intended to provide information about how the analyses were performed but need further updating to be easily re-runnable on other computing systems.
+The scripts and steps listed below correspond to the data analysis pipeline used for the phylogenomic analysis of 16 Fundulidae species as described in article listed above.  The scripts and instructions here are the materials used to generate the 16 ingroup/4 outgroup species supermatrix that was used from phylogenomic analysis from the raw RNA-sequencing data. Please note that the scripts are configured to run specific computer systems, as they contain many hard-coded paths and appear just as they were written for analysis.  These scripts are intended to provide information about how the supermatrix was constructed but all scripts need modifications to be easily re-runnable on other computing systems.
 
 ## 1. Trimming and Filtering
-**fundulus_trimmer.pl**
 
-fundulus_trimmer.pl was run on raw sequence files within the RNAseq directory.  Data were quality trimmed and filtered with [Trimmomatic v0.33](http://www.usadellab.org/cms/?page=trimmomatic "Trimmomatic") to remove adaptor sequences, low-quality bases (Phred <5) and low-quality reads (Phred <5).  Reads were removed from the data set if fewer than 25 base pairs remained after all trimming steps were completed.  Output files were directed to rnaseqOutput directory.
+**fundulus_trimmer.pl** was run on raw sequence files.  Data were quality trimmed and filtered with [Trimmomatic v0.33](http://www.usadellab.org/cms/?page=trimmomatic "Trimmomatic") to remove adaptor sequences, low-quality bases (Phred <5) and low-quality reads (Phred <5).  Reads were removed from the data set if fewer than 25 base pairs remained after all trimming steps were completed.  
 
 ## 2. Group and Concatenate Trimmed Read Files by Sample
-**Group_Trimmed_Species.sh**
 
-**Concatenate_Sorted_Groups.sh**
-
-Trimmed read files from the rnaseqOutput directory were grouped by species using Group_Trimmed_Species.sh.  Individual sample files were then concatenated into single R1 and R2 fastq files using the script Concatenate_Sorted_Groups.sh.  Concatenated species were placed in the Concatenated_Individuals directory.  Every species contained more than one sample.
+Trimmed read files were grouped by species using **Group_Trimmed_Species.sh**.  Individual sample files were then concatenated into single R1 and R2 fastq files using the script **Concatenate_Sorted_Groups.sh**.  Every species contained more than one sample.
 
 ## 3. Select Individual Samples with Highest Number of Reads
-**Names_and_Counts.sh**
 
-The number of reads for each sample's R1 file was counted and output into a plain text file.  The one sample per species with the highest number of reads was selected for further analysis.
+The number of reads for each sample's R1 file was counted and output into a plain text file with the script **Names_and_Counts.sh**.  The one sample per species with the highest number of reads was selected for further analysis.
 
-## 4. *de novo* Assembly of Transcripts using Trinity
+## 4. *de novo* Assembly of Transcripts and Identification of Candidate Coding Regions
 
-*de novo* assembly of transcripts was performed on the individual samples selected in step 3. Each assembly job was submitted to the [SIUC BigDog Cluster](http://oit.siu.edu/rcc/bigdog/ "SIUE BigDog High Performance Computing Cluster") via command line with the following parameters:
+*de novo* assembly of transcripts was performed with [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki "Trinity") release r2014-07-17 on the individual samples selected in step 3. Each assembly job was submitted to the [SIUC BigDog Cluster](http://oit.siu.edu/rcc/bigdog/ "SIUE BigDog High Performance Computing Cluster") via command line with the following parameters:
 ```bash
 Trinity.pl \
 --seqType fq \
@@ -33,3 +28,24 @@ Trinity.pl \
 --normalize_reads \
 --full_cleanup\
 ```
+
+Candidate coding regions were identified from the completed transcripts using [TransDecoder](https://github.com/TransDecoder "TransDecoder") version 3.0.0 with the script **run_transdecoder.sh**.
+
+## 5. Identification of Orthologous Genes
+
+Orthologous genes from among the ingroup and outgroup species were identified from the amino acid files produced by TransDecoder (ingroup species) and from the annotated transcript files downloaded for the outgroup species using [OrthoFinder](https://github.com/davidemms/OrthoFinder "OrthoFinder").  The process was broken up into two phases -  generation of  BLAST (BLAST+v2.2.29) databases and BLAST search commands:
+```bash
+python orthofinder.py -f </path/to/TransDecoderOutputFiles/> -p
+``` 
+followed by submission of the BLAST searches on the [BigDog cluster](http://oit.siu.edu/rcc/bigdog/ "SIUE BigDog High Performance Computing Cluster").  Please see the file **OrthoFinderInstructions.txt** for the database generation and BLAST search commands that were performed.
+
+Once BLAST searches were complete, the BLAST output and the TransDecoder fasta files for each species were moved into the WorkingDirectory (generated by the orthofinder.py command) and the OrtherFinder results were generated with the command:
+```bash
+ortherfinder -b <directory/with/processed_fasta_and_blast_results>
+```
+
+From the OrthoFinder results, orthologous gene groups ("orthogroups") from among all 16 ingroup and four outgroup species were selected for analysis if the group contained exactly one gene sequence from at least one outgroup species and nine ingroup species. For ingroup species, the nucleotide sequence of orthologous genes were selected from OrthoFinder results using the script **Fetch_Ingroup_Sequences.py**. For outgroup species, orthologous genes were selected from OrthoFinder results using the script **Fetch_Outgroup_Sequences.py**.
+
+## 6. Multiple Sequence Alignment and Supermatrix Construction
+
+Multiple sequence alignment was performed on the orthogroups identified in step 5 using the [MAFFT 7 Multiple Aligner](https://mafft.cbrc.jp/alignment/software/ "MAFFT") with the script **Run_MAFFT.py**.  Missing data was coded as missing with the script **ChangeGapCharacters.py**.  The multiple alignment files for each orthogroup was manually edited in MEGA7.  After editing, the orthogroup sequences were concatenated end-to-end to generate the supermatrix in FASTA format with the script **Concatenate_Genes.py**.
