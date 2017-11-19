@@ -1,7 +1,7 @@
 # FundulidaePhylogenomics_RNAseq
 Scripts and files associated with "Phylogenomic analysis of Fundulidae (Teleostei: Cyprinodontiformes) using RNA-sequencing Data"
 
-The scripts and steps listed below correspond to the data analysis pipeline used for the phylogenomic analysis of 16 Fundulidae species as described in article listed above.  The scripts and instructions here are the materials used to generate the 16 ingroup/4 outgroup species supermatrix that was used from phylogenomic analysis from the raw RNA-sequencing data. Please note that the scripts are configured to run specific computer systems, as they contain many hard-coded paths and appear just as they were written for analysis.  These scripts are intended to provide information about how the supermatrix was constructed but all scripts need modifications to be easily re-runnable on other computing systems.
+The scripts and steps listed below correspond to the data analysis pipeline used for the phylogenomic analysis of 16 Fundulidae species as described in article listed above.  The scripts and instructions here are the materials used to generate the 16 ingroup/4 outgroup species supermatrix that was used for phylogenomic analysis from the raw RNA-sequencing data. Please note that the scripts are configured to run specific computer systems, as they contain many hard-coded paths and appear just as they were written for analysis.  These scripts are intended to provide information about how the supermatrix was constructed but all scripts need modifications to be easily re-runnable on other computing systems.
 
 ## 1. Trimming and Filtering
 
